@@ -328,3 +328,65 @@ function clearProfile() {
     userProfile = null;
     setState(AppState.PROFILE_SETUP);
 }
+
+// ==========================================
+// نظام تتبع السعرات الحرارية اليومية
+// ==========================================
+
+/**
+ * الحصول على مفتاح اليوم الحالي
+ */
+function getTodayKey() {
+    const today = new Date();
+    return `vida_cal_meals_${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+}
+
+/**
+ * تحميل بيانات اليوم
+ */
+function loadTodayData() {
+    const key = getTodayKey();
+    const savedData = localStorage.getItem(key);
+
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        todayMeals = data.meals || [];
+        dailyCalories = data.totalCalories || 0;
+    } else {
+        todayMeals = [];
+        dailyCalories = 0;
+    }
+}
+
+/**
+ * حفظ وجبة في سجل اليوم
+ */
+function saveMealToday(analysis) {
+    const meal = {
+        name: analysis.mealName,
+        calories: analysis.calories,
+        macronutrients: analysis.macronutrients,
+        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+    };
+
+    todayMeals.push(meal);
+    dailyCalories += analysis.calories;
+
+    const key = getTodayKey();
+    localStorage.setItem(key, JSON.stringify({
+        meals: todayMeals,
+        totalCalories: dailyCalories,
+        date: new Date().toISOString()
+    }));
+}
+
+/**
+ * مسح سجل اليوم
+ */
+function clearTodayData() {
+    const key = getTodayKey();
+    localStorage.removeItem(key);
+    todayMeals = [];
+    dailyCalories = 0;
+    updateDashboard();
+}
