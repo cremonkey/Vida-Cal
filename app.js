@@ -17,6 +17,8 @@ let currentState = AppState.WELCOME;
 let userProfile = null;
 let currentAnalysis = null;
 let capturedImage = null;
+let dailyCalories = 0;
+let todayMeals = [];
 let pieChart = null;
 
 // تهيئة التطبيق
@@ -33,6 +35,9 @@ function initApp() {
     } else {
         setState(AppState.WELCOME);
     }
+
+    // تحميل سجل اليوم
+    loadTodayData();
 
     // إعداد المستمعين للأحداث
     setupEventListeners();
@@ -150,6 +155,26 @@ function updateDashboard() {
         document.getElementById('profileAge').textContent = `${userProfile.age} عام`;
         document.getElementById('profileWeight').textContent = `${userProfile.weight} كجم`;
     }
+
+    // تحديث السعرات الحرارية اليومية
+    document.getElementById('dailyCaloriesValue').textContent = dailyCalories;
+
+    // تحديث قائمة الوجبات اليومية
+    const mealsList = document.getElementById('todayMealsList');
+    mealsList.innerHTML = '';
+    if (todayMeals.length === 0) {
+        mealsList.innerHTML = '<p class="text-gray-400 text-sm">لم يتم تسجيل وجبات اليوم بعد.</p>';
+    } else {
+        todayMeals.forEach(meal => {
+            const li = document.createElement('li');
+            li.className = 'flex justify-between items-center py-2 border-b border-gray-700 last:border-b-0';
+            li.innerHTML = `
+                <span class="text-white">${meal.name}</span>
+                <span class="text-yellow-400">${meal.calories} سعر حراري</span>
+            `;
+            mealsList.appendChild(li);
+        });
+    }
 }
 
 async function handleFileUpload(e) {
@@ -172,6 +197,10 @@ async function handleFileUpload(e) {
             }
 
             currentAnalysis = await window.GeminiService.analyzeMeal(base64Data, userProfile);
+
+            // حفظ الوجبة في سجل اليوم
+            saveMealToday(currentAnalysis);
+
             setState(AppState.RESULT);
         } catch (error) {
             console.error('خطأ في التحليل:', error);
