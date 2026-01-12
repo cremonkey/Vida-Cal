@@ -1,38 +1,221 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vida Cal - Nutrition AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-      body {
-        font-family: 'Tajawal', sans-serif;
-        background-color: #001f3f; /* Navy */
-      }
-      .bg-navy { background-color: #001f3f; }
-      .text-gold { color: #d4af37; }
-      .bg-gold { background-color: #d4af37; }
-      .border-gold { border-color: #d4af37; }
-    </style>
 
-<link rel="stylesheet" href="/index.css">
-  <script type="importmap">
-{
-  "imports": {
-    "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "recharts": "https://esm.sh/recharts@^3.6.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3"
-  }
-}
-</script>
-  <script type="module" crossorigin src="/assets/index-Ckjig3Kk.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Vida Cal - تطبيق ذكاء اصطناعي لتحليل الوجبات وحساب السعرات الحرارية">
+  <title>Vida Cal - رفيقك الصحي</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
-  <body>
-    <div id="root"></div>
+
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <button id="backBtn" class="back-btn" aria-label="رجوع">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+        <div>
+          <h1 class="header-title">VIDA CAL</h1>
+          <span class="header-subtitle">ذكاء اصطناعي للتغذية العلاجية</span>
+        </div>
+      </div>
+      <div class="header-logo">
+        <span>VC</span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- Welcome Screen -->
+      <section id="welcomeScreen" class="screen welcome-screen active">
+        <div class="welcome-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+          </svg>
+        </div>
+        <h2 class="welcome-title">أهلاً بك في Vida Cal</h2>
+        <p class="welcome-description">رفيقك الصحي لتحليل الوجبات وتتبع حالتك التغذوية بدقة طبية عالية.</p>
+        <button id="startBtn" class="btn-primary">ابدأ الآن</button>
+      </section>
+
+      <!-- Profile Setup Screen -->
+      <section id="profileScreen" class="screen profile-screen">
+        <form id="profileForm" class="profile-form">
+          <h2 class="profile-title">الملف الطبي للمريض</h2>
+
+          <div class="form-group">
+            <label class="form-label" for="nameInput">الاسم</label>
+            <input type="text" id="nameInput" class="form-input" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="ageInput">العمر</label>
+              <input type="number" id="ageInput" class="form-input" value="30" required min="1" max="120">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="genderSelect">الجنس</label>
+              <select id="genderSelect" class="form-select">
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="weightInput">الوزن (كجم)</label>
+              <input type="number" id="weightInput" class="form-input" value="70" required min="20" max="300">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="heightInput">الطول (سم)</label>
+              <input type="number" id="heightInput" class="form-input" value="170" required min="50" max="250">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="diseasesInput">الأمراض المزمنة (إن وجدت)</label>
+            <textarea id="diseasesInput" class="form-textarea"
+              placeholder="مثال: سكري من النوع الثاني، ضغط دم مرتفع، حساسية القمح..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-secondary">حفظ الملف والبدء</button>
+        </form>
+      </section>
+
+      <!-- Dashboard Screen -->
+      <section id="dashboardScreen" class="screen dashboard-screen">
+        <div class="profile-card">
+          <h3 class="profile-greeting">مرحباً، <span id="greetingName"></span></h3>
+          <div class="profile-info">
+            <span id="profileAge"></span>
+            <span>•</span>
+            <span id="profileWeight"></span>
+            <span>•</span>
+            <button id="editProfileBtn" class="btn-link">تعديل الملف</button>
+          </div>
+        </div>
+
+        <div class="upload-container">
+          <div id="uploadArea" class="upload-area">
+            <div class="upload-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <h4 class="upload-title">صور وجبتك</h4>
+            <p class="upload-description">قم بالتقاط صورة أو رفعها لتحليلها فوراً</p>
+          </div>
+          <input type="file" id="fileInput" class="hidden-input" accept="image/*" capture="environment">
+
+          <button id="clearDataBtn" class="btn-danger-link">مسح البيانات والبدء من جديد</button>
+        </div>
+      </section>
+
+      <!-- Analyzing Screen -->
+      <section id="analyzingScreen" class="screen analyzing-screen">
+        <div class="spinner-container">
+          <div class="spinner"></div>
+          <div class="spinner-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+        <div class="analyzing-text">
+          <h3 class="analyzing-title">الذكاء الاصطناعي يقوم بحساب السعرات...</h3>
+          <p class="analyzing-description">نقوم بفحص المكونات وتقييم الوجبة وفقاً لحالتك الصحية...</p>
+        </div>
+      </section>
+
+      <!-- Result Screen -->
+      <section id="resultScreen" class="screen result-screen">
+        <div class="result-image-container">
+          <img id="mealImage" class="result-image" src="" alt="صورة الوجبة">
+          <div class="result-meal-name">
+            <p id="mealName"></p>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <p class="stat-label">السعرات الحرارية</p>
+            <p class="stat-value" id="caloriesValue">0</p>
+            <p class="stat-unit">كيلو كالوري</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">تقييم الوجبة</p>
+            <p class="stat-value" id="healthScoreValue">0/100</p>
+            <div class="progress-bar">
+              <div id="healthProgressBar" class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-section">
+          <h3 class="section-title">توزيع العناصر الغذائية</h3>
+          <div class="chart-container">
+            <canvas id="nutritionChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Medical Warning (Hidden by default) -->
+        <div id="medicalWarning" class="medical-warning" style="display: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div>
+            <h4 class="warning-title">تحذير طبي هام!</h4>
+            <p id="warningText" class="warning-text"></p>
+          </div>
+        </div>
+
+        <div class="advice-section">
+          <h3 class="advice-header">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            نصيحة طبيب التغذية
+          </h3>
+          <p id="adviceText" class="advice-text"></p>
+        </div>
+
+        <div class="ingredients-section">
+          <h3 class="section-title">المكونات المرصودة</h3>
+          <ul id="ingredientsList" class="ingredients-list"></ul>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Fixed Bottom Bar -->
+    <div id="bottomBar" class="bottom-bar">
+      <button id="newMealBtn" class="btn-secondary">تصوير وجبة جديدة</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="gemini-service.js"></script>
+  <script src="app.js"></script>
 </body>
+
 </html>
